@@ -1,0 +1,61 @@
+#POLICIES
+
+{
+  "policies": [
+    {
+      "name": "Deny non-Standard_GRS storage accounts",
+      "mode": "All",
+      "policyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Storage/storageAccounts"
+            },
+            {
+              "not": {
+                "field": "Microsoft.Storage/storageAccounts/sku.name",
+                "equals": "Standard_GRS"
+              }
+            }
+          ]
+        },
+        "then": {
+          "effect": "deny"
+        }
+      }
+    },
+    {
+      "name": "Deny non-allowed resource types",
+      "policyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "notEquals": "Microsoft.Compute/virtualMachines"
+            },
+            {
+              "field": "type",
+              "notEquals": "Microsoft.Storage/storageAccounts"
+            },
+            {
+              "field": "type",
+              "notEquals": "Microsoft.Network/virtualNetworks"
+            },
+            {
+              "field": "type",
+              "notEquals": "Microsoft.DataFactory/factories"
+            },
+            {
+              "field": "type",
+              "notEquals": "Microsoft.KeyVault/vaults"
+            }
+          ]
+        },
+        "then": {
+          "effect": "deny"
+        }
+      }
+    }
+  ]
+}

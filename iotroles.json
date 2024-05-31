@@ -1,0 +1,23 @@
+{
+    "Name": "Roles for IoT Hub and Resources",
+    "Id": null,
+    "IsCustom": true,
+    "Description": "Roles to manage IoT Hub and view all resources.",
+    "Actions": [
+        "Microsoft.Authorization/*",
+        "Microsoft.Resources/subscriptions/resourceGroups/*",
+        "Microsoft.Resources/deployments/*",
+        "Microsoft.Devices/IotHubs/*",
+        "Microsoft.Devices/IotHubs/devices/write"
+        "Microsoft.Devices/provisioningServices/*"
+        "Microsoft.Web/sites/read"
+    ],
+    "NotActions": []
+}
+
+
+
+
+
+
+

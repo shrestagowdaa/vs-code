@@ -1,0 +1,257 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "admin-username": {
+            "type": "String"
+        },
+        "admmin-password": {
+            "type": "SecureString"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        },
+        "data-disk": {
+            "type": "string",
+            "defaultValue": "Standard_LRS"
+        }
+    },
+    "variables": {
+        "public-ip": "[concat(parameters('admin-username'),'-ip')]",
+        "dns": "[concat(parameters('admin-username'),uniqueString(subscription().id))]",
+        "nsg": "[concat(parameters('admin-username'),'-nsg')]",
+        "vnet": "[concat(parameters('admin-username'),'-vnet')]",
+        "subnet": "[concat(parameters('admin-username'),'-subnet')]",
+        "nic": "[concat(parameters('admin-username'),'-nic')]",
+        "vm": "[concat(parameters('admin-username'),'-vm')]",
+        "storageaccount": "[concat(parameters('admin-username'),'-sa')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2023-04-01",
+            "name": "[variables('public-ip')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('dns')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2023-04-01",
+            "name": "[variables('nsg')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "Default-SSH-Rule",
+                        "properties": {
+                            "description": "description",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "AllowHTTP",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 101,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "AllowHTTPS",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 102,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2023-04-01",
+            "name": "[variables('vnet')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg'))]"
+            ],
+            "tags": {
+                "displayName": "ubuntuVM1-VirtualNetwork"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnet')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2023-04-01",
+            "name": "[variables('nic')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('public-ip'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('vnet'))]"
+            ],
+            "tags": {
+                "displayName": "ubuntuVM1-NetworkInterface"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipConfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('public-ip'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnet'), variables('subnet'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+      {
+        "name": "[variables('storageaccount')]",
+        "type": "Microsoft.Storage/storageAccounts",
+        "apiVersion": "2023-01-01",
+        "tags": {
+            "displayName": "storage"
+        },
+        "location": "[resourceGroup().location]",
+        "kind": "StorageV2",
+        "sku": {
+            "name": "Standard_LRS",
+            "tier": "Standard"
+        }
+      },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2023-03-01",
+            "name": "[variables('vm')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('nic'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts',variables('storageaccount'))]"
+            ],
+            "tags": {
+                "displayName": "ubuntuVM1"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_B2s"
+                },
+                "osProfile": {
+                    "computerName": "[variables('vm')]",
+                    "adminUsername": "[parameters('admin-username')]",
+                    "adminPassword": "[parameters('admmin-password')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "16.04-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "ubuntuVM1-OSDisk",
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('data-disk')]"
+                        },
+                        "deleteOption": "Delete"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nic'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2019-09-01",
+            "name": "keyvault1",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": []
+            
+        }
+
+        },
+        {
+            
+      "type": "Microsoft.DataFactory/factories",
+      "apiVersion": "2018-06-01",
+      "name": "meghadatafactory",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {}
+    
+        }
+        
+           ],
+    "outputs": {
+        "admin-username": {
+            "type": "String",
+            "value": "[parameters('admin-username')]"
+        },
+        "admin-pass": {
+            "type": "String",
+            "value": "[parameters('admmin-password')]"
+        },
+        "dns": {
+            "type": "String",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('public-ip'))).dnsSettings.fqdn]"
+        }
+    }
+}

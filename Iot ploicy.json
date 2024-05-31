@@ -1,0 +1,23 @@
+
+{
+    "if": {
+        "not": {
+            "field": "type",
+            "in": [
+                  "Microsoft.Resources/deployments",
+                  "Microsoft.Devices/IotHubs",
+                  "Microsoft.Devices/provisioningServices",
+                  "Microsoft.Web/sites"
+
+            ]
+        }
+    },
+    "then": {
+        "effect": "deny"
+    }
+}
+
+
+
+
+

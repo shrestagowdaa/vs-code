@@ -1,0 +1,23 @@
+#RBAC TASK 3
+
+{
+    "Name": "Roles for user",
+    "Id": "null",
+    "IsCustom": true,
+    "Description": "roles to the user.",
+    "Actions": [
+      "Microsoft.Authorization/*",
+      "Microsoft.Resources/subscriptions/resourceGroups/read",
+      "Microsoft.Network/virtualNetworks/*",
+      "Microsoft.Network/virtualNetworks/subnets/*",
+      "Microsoft.Network/networkSecurityGroups/*",
+      "Microsoft.Network/applicationSecurityGroups/*",
+      "Microsoft.Network/dnsZones/*", 
+      "Microsoft.Network/privateDnsZones/*",
+      "Microsoft.Network/privateDnsZones/virtualNetworkLinks/*",
+      "Microsoft.Resources/deployments/*"
+    ],
+    "AssignableScopes": [
+      "/subscriptions/{subscriptionId}"
+    ]
+  }

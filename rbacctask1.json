@@ -1,0 +1,27 @@
+{
+    "Name": "Role",
+    "Id": null,
+    "IsCustom": true,
+    "Description": "role based access",
+    "Actions": [
+        "Microsoft.Authorization/*/read",
+        "Microsoft.Compute/virtualMachines/read",
+        "Microsoft.Compute/virtualMachines/start/action",
+        "Microsoft.Compute/virtualMachines/deallocate/action",
+        "Microsoft.Network/networkInterfaces/*",
+        "Microsoft.Network/networkSecurityGroups/*",
+        "Microsoft.Network/publicIPAddresses/*",
+        
+        "Microsoft.Network/virtualNetworks/write",
+        "Microsoft.Resources/deployments/write",
+       
+        "Microsoft.Resources/subscriptions/resourceGroups/read",
+        "Microsoft.DataFactory/factories/read",
+        "Microsoft.Resources/deployments/validate/action",
+        "Microsoft.KeyVault/vaults/read",
+        
+        "Microsoft.Storage/storageAccounts/write"
+    ],
+    "NotActions": []
+}
+

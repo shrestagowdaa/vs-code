@@ -1,0 +1,22 @@
+{
+  "Name": "Roles for user",
+  "Id": null,
+  "IsCustom": true,
+  "Description": "Roles to the user.",
+  "Actions": [
+    "Microsoft.Authorization/*",
+    "Microsoft.Resources/subscriptions/resourceGroups/*",
+    "Microsoft.Network/virtualNetworks/*",
+    "Microsoft.Network/virtualNetworks/subnets/*",
+    "Microsoft.Network/networkSecurityGroups/*",
+    "Microsoft.Network/applicationSecurityGroups/*",
+    "Microsoft.Network/dnsZones/*", 
+    "Microsoft.Network/privateDnsZones/*",
+    "Microsoft.Network/privateDnsZones/virtualNetworkLinks/*",
+    "Microsoft.Compute/disks/*", 
+    "Microsoft.Compute/virtualMachines/*",
+    "Microsoft.Network/publicIPAddresses/*",
+    "Microsoft.Resources/deployments/*"
+  ],
+  "NotActions": []
+}

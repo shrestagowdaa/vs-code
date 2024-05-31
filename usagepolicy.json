@@ -1,0 +1,56 @@
+[
+    {
+        "ResourceType": "Microsoft.Network/virtualNetworks",
+        "Parameter": [
+            {
+                "Name": "max-virtual-networks",
+                "Value": "5"
+            }
+        ]
+    },
+    {
+        "ResourceType": "Microsoft.Network/virtualNetworks/subnets",
+        "Parameter": [
+            {
+                "Name": "max-subnets-per-virtual-network",
+                "Value": "10"
+            }
+        ]
+    },
+    {
+        "ResourceType": "Microsoft.Network/networkSecurityGroups",
+        "Parameter": [
+            {
+                "Name": "max-network-security-groups",
+                "Value": "10"
+            }
+        ]
+    },
+    {
+        "ResourceType": "Microsoft.Network/applicationSecurityGroups",
+        "Parameter": [
+            {
+                "Name": "max-application-security-groups",
+                "Value": "10"
+            }
+        ]
+    },
+    {
+        "ResourceType": "Microsoft.Network/dnsZones",
+        "Parameter": [
+            {
+                "Name": "max-dns-zones",
+                "Value": "10"
+            }
+        ]
+    },
+    {
+        "ResourceType": "Microsoft.Network/privateDnsZones",
+        "Parameter": [
+            {
+                "Name": "max-private-dns-zones",
+                "Value": "10"
+            }
+        ]
+    }
+]
